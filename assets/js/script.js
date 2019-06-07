@@ -26,6 +26,6 @@ function myImage(image, tag) {
 
   gifImage.attr("src", image);
   gifImage.attr("alt", `${tag} image`);
-  
+
   $("#gifDisplay").prepend(gifImage);
 }
