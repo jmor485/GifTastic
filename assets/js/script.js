@@ -1,4 +1,5 @@
 var animalsArray = ['puppies', 'dogs', 'cats', 'pandas'];
+var rating = 'g';
 
 $(document).ready(function () {
   for (var i = 0; i < animalsArray.length; i++) {
