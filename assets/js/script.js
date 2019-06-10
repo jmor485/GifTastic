@@ -1,31 +1,55 @@
-var topics = ['puppies', 'dogs', 'cats', 'pandas'];
+var animalsArray = ['puppies', 'dogs', 'cats', 'pandas'];
 
-$("#gifBTN").on("click", function () {
-  event.preventDefault();
-  var myKey = 'TRqFZfF9BvaQon8dF4sa3ZXyUPB7BAF4';
-  var userTag = document.querySelector('#myTag').value;
-  var queryURL = `https://api.giphy.com/v1/gifs/random?api_key=${myKey}&tag=${userTag}`;
-//
-  $.ajax({
-    url: queryURL,
-    method: "GET"
-  }).then(function (response) {
-    console.log(response);
-    console.log(queryURL);
-    var imageUrl = response.data.image_original_url;
-    console.log(imageUrl);
-    myImage(imageUrl, userTag);
-
-
-
-  });
+$(document).ready(function () {
+  for (var i = 0; i < animalsArray.length; i++) {
+    $("#animal-buttons").append("<button type='button' onclick='searchGif(\"" + animalsArray[i] + "\")' class='btn btn-primary' value=' " + animalsArray[i] + "'> " + animalsArray[i] + " </button>");
+  }
 });
 
-function myImage(image, tag) {
-  var gifImage = $("<img>");
+function animalsButtonClicked() {
+  var userInput = $('#animal-input').val();
+  searchGif(userInput);
+}
 
-  gifImage.attr("src", image);
-  gifImage.attr("alt", `${tag} image`);
+function submitButtonClicked() {
+  var userInput = $('#animal-input').val();
 
-  $("#gifDisplay").prepend(gifImage);
+  if (userInput) {
+    $('#animal-buttons').append("<button type='button' onclick='searchGif(\"" + userInput + "\")' class='btn btn-primary' value=' " + userInput + "'> " + userInput + " </button>");
+  }
+}
+
+function searchGif(gifName) {
+  $.ajax({
+    url: 'https://api.giphy.com/v1/gifs/search?q= ' + gifName + ' &api_key=TRqFZfF9BvaQon8dF4sa3ZXyUPB7BAF4',
+    type: 'GET',
+  })
+    .done(function (response) {
+      displayGif(response);
+    })
+}
+
+function displayGif(response) {
+  $('#animals').empty();
+  for (var i = 0; i < response.data.length; i++) {
+    var rating = "<div class='ratings'> Rating:  " + (response.data[i].rating) + " </div>";
+    var image = rating + '<img src= " ' + response.data[i].images.fixed_height_still.url +
+      '" data-still=" ' + response.data[i].images.fixed_height_still.url +
+      ' " data-animate=" ' + response.data[i].images.fixed_height.url + '" data-state="still" class="movImage" style= "width:250px; height:250px">';
+
+    image = '<div class="col-md-4">' + image + "</div>";
+    $('#animals').append(image);
+  }
+
+  $('.movImage').on('click', function () {
+    var state = $(this).attr('data-state');
+    if (state == 'still') {
+      $(this).attr('src', $(this).attr("data-animate"));
+      $(this).attr('data-state', 'animate');
+    } else {
+      $(this).attr('src', $(this).attr("data-still"));
+      $(this).attr('data-state', 'still');
+    }
+
+  });
 }
